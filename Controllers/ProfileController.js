@@ -8,6 +8,7 @@ const SecurityManager = require('../Utilities/SecurityManager/index');
 Router.route('/')
     .get(SecurityManager.extractUserFromToken,function (req, res,next) {
 
+
         _service.ProfileService.getById(req.body.UserId,function(result){
             req.result=result;
             next();
@@ -16,14 +17,23 @@ Router.route('/')
     })
     .post(function (req, res,next) {
 
-        _service.MongoUserService.add(req.body,function(result){
-            req.body._Id=result.data._id;
-            _service.ProfileService.Create(req.body,function(result){
-                res.send(result);
-            });
+        console.log(req.body.User.Email);
+
+        var emailOrMobile=req.body.User.Email || req.body.User.Mobile
+
+        _service.UserService.getByEmailOrMobile(emailOrMobile,function(result){
+
+            if(result.error){
+                if(result.data=='Invalid Email or Mobile');
+                    _service.ProfileService.Register(req.body,function(result){
+                        res.send(result);
+                    });
+            }
+            else{
+                res.send({error: true, data: 'User already existed with given Email or Mobile'});
+            }
         });
 
-        
     })
     .put(function (req, res,next) {
         _service.ProfileService.update(req.body,function(result){

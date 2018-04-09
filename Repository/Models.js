@@ -33,11 +33,8 @@ var Profile=bookshelf.Model.extend(
     {
         tableName:'Profile',
         idAttribute: '_id',
-        User: function() {
+        user: function() {
             return this.hasOne(User,'_id');
-        },
-        Account: function() {
-            return this.hasOne(Account,'_id');
         }
     }
 );
@@ -45,7 +42,7 @@ var Profiles=bookshelf.Collection.extend({model:Profile});
 
 var User=bookshelf.Model.extend(
     {
-        tableName:'User',
+        tableName:'user',
         idAttribute: '_id',
         UserDetails: function() {
             return this.belongsTo(Profile,'_id');
@@ -67,6 +64,8 @@ var Users=bookshelf.Collection.extend({model:User});
 
 
 var UserSchema = new mongoose.Schema({
+    FirstName:String,
+    LastName:String,
     ProfileName: String,
     ProfilePic: String
 });

@@ -146,6 +146,7 @@ var Repository={
                     callback({error: true, data: 'Invalid Email or Mobile'});
             })
             .catch(function (err) {
+                console.log(err);
                 callback({error: true, data: {message: 'error'}});
             });
     },

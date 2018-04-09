@@ -4,32 +4,39 @@ var Models=require('./Models.js');
 var Repository={
     Register:function(Profile,callback){
 
-        var rawSql = 'call CreateUser(?,?,?,?,?,?,?,?,?,?,?,?,@out_value)';
+
+
+        var rawSql = 'call CreateUser(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,@out_value)';
 
         var outPut='';
 
 
         Models.bookshelf.knex.raw(rawSql,[
             Profile._Id.toHexString() || '',
-            Profile.Email || '',
+            Profile.User.Email || null,
+            Profile.User.Mobile || null,
 
-
-            Profile.User.RegistrationIP || '',
+            Profile.User.RegistrationIp || '',
             Profile.User.EmailVerification || '',
-            Profile.User.PasswordHash || '',
+            Profile.User.MobileOtp || '',
+            Profile.User.Password || '',
             Profile.User.Salt || '',
+
             Profile.User.GooglePlus || '',
-            Profile.User.FacebookID || '',
+            Profile.User.Facebook || '',
 
             Profile.FirstName || '',
             Profile.LastName || '',
             Profile.ProfileName || '',
-            Profile.ProfilePic || ''
+            Profile.ProfilePic || '',
+            Profile.AccountType || null,
+            Profile.UserStatus || null
         ])
         .then(function (ProfileDbModel) {
             callback({error: false, data:Profile._Id.toHexString()});
         })
         .catch(function (err) {
+            console.log(err);
             callback({error: true, data: {message: 'failed.'}});
         }); 
         
