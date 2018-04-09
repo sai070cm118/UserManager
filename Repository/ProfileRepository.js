@@ -122,9 +122,9 @@ var Repository={
     getById:function(id,callback){
         Models.Profile
             .where({_id: id})
-            .fetch({ withRelated: [{'User': function(qb) {
+            .fetch({ withRelated: [{'user': function(qb) {
                 qb.column('_id', 'Mobile');
-              }},'Account']})
+              }}]})
             .then(function (Profile) {
                 if (!Profile) {
                     callback({error: true, data: {}});
@@ -134,6 +134,7 @@ var Repository={
                 }
             })
             .catch(function (err) {
+                console.log(err);
                 callback({error: true, data: {message: 'Unable to get profile.'}});
             });
     },

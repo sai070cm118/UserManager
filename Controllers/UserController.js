@@ -180,20 +180,81 @@ Router.route('/verifyMobile')
 
 Router.route('/Login')
 .post(function (req, res) {
+
     console.log(req.body);
-    _service.UserService.login(req.body,function(result){
+    console.log(req.body.User.Email);
+    _service.UserService.login(req.body.User,function(result){
         if(result.error)
             res.status(500).json(result);
         else{
+
             var claims={Id:result.data._id}
-            res.send({Token:SecurityManager.createToken(claims)});
+            var token={
+                UserId:result.data._id,
+                RefreshToken: SecurityManager.createToken(claims,true),
+                SessionToken: SecurityManager.createToken(claims,false),
+                UserAgent: '',
+                DeviceId: '',
+                IsMobile:  '',
+                Details: '',
+
+            };
+
+            _service.TokenService.create(token,function(result){
+                //console.log(result.data.get(_id));
+                //token._id=result._id;
+                res.send({Token:token});
+            });
+
         }
     });
 });
 
-Router.route('/Logout')
-.post(function (req, res) {
-    res.json({});
+Router.route('/token/refresh')
+.get(function (req, res) {
+
+    console.log(req.headers['sessiontoken']);
+    console.log(req.headers['refreshtoken']);
+
+
+
+    _service.TokenService.GetByRefreshToken(req.headers['refreshtoken'],function(result){
+
+
+        console.log(result);
+        
+        if(result.error){
+            
+            res.send(result.data);
+        }
+        else{
+                
+            var claims={Id:result.data._id}
+            result.data.SessionToken= SecurityManager.createToken(claims,false);
+
+            _service.TokenService.Refresh(result.data,function(){
+
+
+                res.send(result.data);
+
+            });
+
+        }
+    });
+
+
+});
+
+
+
+Router.route('/token/logout')
+.get(function (req, res) {
+
+    console.log(req.headers['refreshtoken']);
+
+    _service.TokenService.Delete(req.headers['refreshtoken'],function(result){
+        res.json(result);
+    })
 });
 
 

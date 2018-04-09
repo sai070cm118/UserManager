@@ -62,11 +62,16 @@ var Service={
     },
     login:function(user,callback){
         this.getByEmailOrMobile(user.Email,function(result){
+
+            console.log(result);
+
             if(result.error)
                 callback(result);
             else{
                 var hashedPassword=SecurityManager.sha512(user.Password,result.data.get('Salt'));
                 if(result.data.get('PasswordHash')==hashedPassword.passwordHash){
+
+
                     _profileService.getById(result.data.get('_id'),function(result){
                         callback(result);
                     });

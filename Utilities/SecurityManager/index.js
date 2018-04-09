@@ -39,10 +39,14 @@ function extractUserFromToken(req, res, next) {
 }
 
 //It will Generates the new token.
-function createToken(claims){
+function createToken(claims,IsRefresh){
 
     claims.iat=new Date().getTime();
-    claims.exp=new Date().getTime() + (24*60*60*1000); //One Day is the expiration.
+
+    if(IsRefresh)
+        claims.exp=new Date().getTime() + (ConfigurationManager.getRefreshTokenExpTime());
+    else
+        claims.exp=new Date().getTime() + (ConfigurationManager.getTokenExpTime()); 
 
     var jwt =  nJwt.create(claims,ConfigurationManager.getTokenSecret(),ConfigurationManager.getTokenAlgorithm(0));
     return token = jwt.compact();

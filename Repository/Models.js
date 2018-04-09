@@ -31,7 +31,7 @@ var bookshelf = require('bookshelf')(knex);
 
 var Profile=bookshelf.Model.extend(
     {
-        tableName:'Profile',
+        tableName:'profile',
         idAttribute: '_id',
         user: function() {
             return this.hasOne(User,'_id');
@@ -52,15 +52,13 @@ var User=bookshelf.Model.extend(
 var Users=bookshelf.Collection.extend({model:User});
 
 
-
-
-
-
-
-
-
-
-
+var Token=bookshelf.Model.extend(
+    {
+        tableName:'token',
+        idAttribute: '_id'
+	}
+);	
+var Tokens=bookshelf.Collection.extend({model:Token});
 
 
 var UserSchema = new mongoose.Schema({
@@ -78,11 +76,13 @@ var Models={
     Users:Users,
     Profile:Profile,
     Profiles:Profiles,
-
+    Token:Token,
+    Tokens:Tokens,
 
     //Mongo Models
     UserModel:UserModel,
     DbConfig:dbConfig,
     bookshelf:bookshelf
+    
 };
 module.exports=Models;
