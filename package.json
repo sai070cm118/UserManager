@@ -2,7 +2,7 @@
   "name": "usermanager",
   "version": "1.0.0",
   "description": "Will manages the User for the platform",
-  "main": "index.ts",
+  "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
