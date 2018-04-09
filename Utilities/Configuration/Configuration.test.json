@@ -1,0 +1,48 @@
+{
+    "WebURI":"http://127.0.0.1:3001/",
+    "ApiURI":"http://127.0.0.1:3002/",
+    "NotificationURI":"http://127.0.0.1:3003/",
+    "SocketURI":"http://127.0.0.1:3004/",
+    "MongoConversationDbConnection":"mongodb://127.0.0.1:27017/Conversation",
+    "MongoNotificationDbConnection":"mongodb://127.0.0.1:27017/Notification",
+    "MySqlDbConnection":"http://127.0.0.1:3001/",
+    "MySqlDbConfiguration":{"host": "127.0.0.1","user": "root","password": "sairam0168","database": "gdatabase","charset": "utf8"},
+    "TokenSecret":"sairam0168",
+    "RefreshTokenSecret":"sairam0168",
+    "Algorithm":"HS256",
+    "RefreshAlgorithm":"HS256",
+    "TokenExpireTime":86400000,//One day limit
+    "RefreshTokenExpireTime":86400000,//One day limit
+    "Authentication":{
+        "Facebook": {
+            "clientID": "225172824580440",
+            "clientSecret": "403b89b1068a9348b5a2b1877f5a1622",
+            "callbackDomain": "http://localhost:3000/",
+            "callbackURI":"auth/facebook/callback"
+        },
+        "Twitter": {
+            "consumerKey": "get_your_own",
+            "consumerSecret": "get_your_own",
+            "callbackDomain": "http://127.0.0.1:3000/",
+            "callbackURI":"auth/twitter/callback"
+        },
+        "Github": {
+            "clientID": "get_your_own",
+            "clientSecret": "get_your_own",
+            "callbackDomain": "http://127.0.0.1:3000/",
+            "callbackURI":"auth/github/callback"
+        },
+        "Google": {
+            "clientID": "1047885808572-2n4e3vhvavotp881fiis3n413ggh0mi1.apps.googleusercontent.com",
+            "clientSecret": "0xjQBJMe72gPhS19bKXMRxwC",
+            "callbackDomain": "http://localhost:3000/",
+            "callbackURI":"auth/google/callback"
+        },
+        "Instagram": {
+            "clientID": "get_your_own",
+            "clientSecret": "get_your_own",
+            "callbackDomain": "http://127.0.0.1:3000/",
+            "callbackURI":"auth/instagram/callback"
+        }
+    }
+}

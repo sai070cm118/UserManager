@@ -1,0 +1,14 @@
+1) Common data
+    a) Profile
+    b) User
+    c) Login logger
+    d) Profile at Mongo
+    e) App Data and update with app server api datails.
+
+2) App data
+    a) Profile
+
+Actions
+
+1) Upto Name and profile pic update
+
