@@ -99,6 +99,28 @@ Router.route('/validateToken/:token')
       }
   });
 
+
+  
 });
+Router.route('/Bytoken/Myprofile')
+    .get(function (req, res) {
+        _service.TokenService.GetBySessionToken(req.headers['sessiontoken'],function(result){
+
+
+            console.log(result);
+
+            if(!result.error){
+                _service.ProfileService.getById(result.data.userId,function(result){
+                    res.json(result);
+                });
+            }
+            else{
+                res.json(result);
+            }
+
+        });
+    });
+
+
 
 module.exports=Router;

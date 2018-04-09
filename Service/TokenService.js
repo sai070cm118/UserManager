@@ -13,6 +13,9 @@ var Service={
     },
     GetByRefreshToken(refreshToken,callback){
         _repository.TokenRepository.GetByRefreshToken(refreshToken,callback);
+    },
+    GetBySessionToken(sessionToken,callback){
+        _repository.TokenRepository.GetBySessionToken(sessionToken,callback);
     }
 
 }

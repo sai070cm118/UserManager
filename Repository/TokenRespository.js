@@ -71,7 +71,25 @@ var Repository={
             .forge({RefreshToken: refreshToken})
             .fetch()
             .then(function (token) {
-                console.log(token);
+                if (!token) {
+                    callback({error: true, data: {}});
+                }
+                else {
+                    callback({error: false, data: token.toJSON()});
+                }
+            })
+            .catch(function (err) {
+                console.log(err);
+                callback({error: true, data: {message: 'Unable to get token info.'}});
+            });
+    },
+    GetBySessionToken(sessionToken,callback){
+
+        
+        Models.Token
+            .forge({SessionToken: sessionToken})
+            .fetch()
+            .then(function (token) {
                 if (!token) {
                     callback({error: true, data: {}});
                 }
