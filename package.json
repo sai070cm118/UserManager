@@ -4,6 +4,7 @@
   "description": "Will manages the User for the platform",
   "main": "app.js",
   "scripts": {
+    "start": "node app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
