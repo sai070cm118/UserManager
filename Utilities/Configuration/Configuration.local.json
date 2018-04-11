@@ -7,8 +7,8 @@
     "RefreshTokenSecret":"sairam0168",
     "Algorithm":"HS256",
     "RefreshAlgorithm":"HS256",
-    "TokenExpireTime":86400000,
-    "RefreshTokenExpireTime":86400000,
+    "TokenExpireTime":31536000000,
+    "RefreshTokenExpireTime":31536000000,
     "Authentication":{
         "Facebook": {
             "clientID": "225172824580440",
