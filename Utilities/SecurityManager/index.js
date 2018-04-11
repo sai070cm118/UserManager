@@ -43,12 +43,15 @@ function createToken(claims,IsRefresh){
 
     claims.iat=new Date().getTime();
 
-    if(IsRefresh)
-        claims.exp=new Date().getTime() + (ConfigurationManager.getRefreshTokenExpTime());
-    else
-        claims.exp=new Date().getTime() + (ConfigurationManager.getTokenExpTime()); 
-
     var jwt =  nJwt.create(claims,ConfigurationManager.getTokenSecret(),ConfigurationManager.getTokenAlgorithm(0));
+   
+    
+    if(IsRefresh)
+        jwt.setExpiration(new Date().getTime() + (ConfigurationManager.getRefreshTokenExpTime()));
+    else
+        jwt.setExpiration(new Date().getTime() + (ConfigurationManager.getTokenExpTime())); 
+
+   
     return token = jwt.compact();
 }
 
