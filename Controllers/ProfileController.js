@@ -51,9 +51,9 @@ Router.route('/')
 
 Router.route('/:id')
   .get(function (req, res,next) {
+    console.log(req.params.id);
     _service.ProfileService.getById(req.params.id,function(result){
-        req.result=result;
-        next();
+        res.send(result);
     });
 });
 

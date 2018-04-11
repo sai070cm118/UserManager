@@ -122,12 +122,10 @@ var Repository={
     getById:function(id,callback){
         Models.Profile
             .where({_id: id})
-            .fetch({ withRelated: [{'user': function(qb) {
-                qb.column('_id', 'Mobile');
-              }}]})
+            .fetch({ withRelated: []})
             .then(function (Profile) {
                 if (!Profile) {
-                    callback({error: true, data: {}});
+                    callback({error: true, data: {message: 'Profile not found.'}});
                 }
                 else {
                     callback({error: false, data: Profile.toJSON()});
