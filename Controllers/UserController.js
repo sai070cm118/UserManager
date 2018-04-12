@@ -203,7 +203,7 @@ Router.route('/Login')
             _service.TokenService.create(token,function(result){
                 //console.log(result.data.get(_id));
                 //token._id=result._id;
-                res.send({Token:token});
+                res.send(token);
             });
 
         }
