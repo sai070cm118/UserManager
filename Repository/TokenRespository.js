@@ -34,7 +34,7 @@ var Repository={
                 SessionToken: token.SessionToken || model.get('SessionToken')
             })
             .save()
-            .then(function () {
+            .then(function() {
                 callback({error: false, data: 'Token refreshed'});
             })
             .catch(function (err) {
