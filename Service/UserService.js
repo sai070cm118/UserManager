@@ -75,9 +75,9 @@ var Service={
                     _profileService.getById(result.data.get('_id'),function(result){
 
                         if(result.data.Status==1)
-                            callback({error:true,data:{message:'Email not verified.',code:2}});
+                            callback({error:false,data:{message:'Email not verified.',code:2,data:result.data}});
                         else if(result.data.Status==2)
-                            callback({error:true,data:{message:'Mobile not verified.',code:3}});
+                            callback({error:false,data:{message:'Mobile not verified.',code:3,data:result.data}});
                         else if(result.data.Status==3){
                             if(result.data.IsActive){
                                 callback(result);

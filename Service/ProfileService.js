@@ -58,6 +58,8 @@ var Service={
                             };
     
                             NotificationManager.sendEmail(mailOptions);
+
+                            //TODO: Need to send the otp to mobile.
                         }
 
                         callback(result);
