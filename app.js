@@ -11,6 +11,11 @@ app.use(bodyParser.json());
 app.use(bodyParser.json({ type: 'application/vnd.api+json'}));
 app.use(cors());
 app.use('/api',require('./Router'));
+
+app.use('/',function(req,res){
+	res.send('UserManager Api running.');
+});
+
 app.use(function(err, req, res, next){
   	res.send(500, 'Something broke!');
 });
