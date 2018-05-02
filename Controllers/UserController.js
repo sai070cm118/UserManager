@@ -215,7 +215,7 @@ Router.route('/Login')
 
             };
 
-            _service.TokenService.create(token,function(result){
+            _service.TokenService.create(token,function(tokenResult){
                 result.data.Token=token;
                 res.send(result);
             });
