@@ -200,7 +200,7 @@ Router.route('/Login')
 .post(function (req, res) {
     _service.UserService.login(req.body.User,function(result){
         if(result.error)
-            res.status(500).json(result);
+            res.send(result);
         else{
 
             var claims={Id:result.data._id}
@@ -216,7 +216,8 @@ Router.route('/Login')
             };
 
             _service.TokenService.create(token,function(result){
-                res.send(token);
+                result.data.Token=token;
+                res.send(result);
             });
 
         }
