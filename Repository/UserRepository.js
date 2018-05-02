@@ -40,10 +40,13 @@ var Repository={
     },
     update:function(User,callback){
 
+
+        console.log(User);
         Models.User
         .forge({_id: User._id})
         .fetch()
         .then(function(model) {
+
             model.set({
                 EmailVerification: User.EmailVerification || model.get('EmailVerification'),
 
@@ -51,23 +54,20 @@ var Repository={
                 Salt: User.Salt || model.get('Salt'),
                 
                 Mobile: User.Mobile || model.get('Mobile'),
-                TempMobile: User.TempMobile || model.get('TempMobile'),
-                MobileVerificationOTP: User.MobileVerificationOTP || model.get('MobileVerificationOTP'),
-
-                GooglePlus: User.GooglePlus || model.get('GooglePlus'),
-                FacebookID: User.FacebookID || model.get('FacebookID'),
+                MobileVerification: User.MobileVerification || model.get('MobileVerification'),
 
                 KeepMe: User.KeepMe || model.get('KeepMe'),
                 
                 RecoverType: User.RecoverType != undefined  ? User.RecoverType : model.get('RecoverType'),
                 RecoverHash: User.RecoverHash || model.get('RecoverHash'),
-                RecoverTimeStamp: User.RecoverTimeStamp || model.get('RecoverTimeStamp'),
+                TimeStamp: User.TimeStamp || model.get('TimeStamp'),
             })
             .save()
             .then(function () {
-                callback({error: false, data: 'User updated'});
+                callback({error: false, data:{message:  'User details updated'}});
             })
             .catch(function (err) {
+                console.log(err);
                 callback({error: true, data: {message: 'Update failed for User.'}});
             });
         });
@@ -114,6 +114,7 @@ var Repository={
                 }
             })
             .catch(function (err) {
+                console.log(err);
                 callback({error: true, data: {message: 'Unable to get user.'}});
             });
     },
@@ -133,21 +134,20 @@ var Repository={
                 callback({error: true, data: {message: 'Unable to get user.'}});
             });
     },
-    getByEmailOrMobile:function(EmailOrMobile,callback){
+    getByEmailOrMobile:function(email,mobile,callback){
         Models.User
             .query(function(qb) {
-                qb.where('Email', '=', EmailOrMobile).orWhere('Mobile', '=', EmailOrMobile);
+                qb.where('Email', '=', email).orWhere('Mobile', '=', mobile);
             })
             .fetch()
             .then(function (User) {
                 if(User!=null)
                     callback({error: false, data: User});
                 else
-                    callback({error: true, data: 'Invalid Email or Mobile'});
+                    callback({error: true, data: 'User not found with the Email/Mobile.'});
             })
             .catch(function (err) {
-                console.log(err);
-                callback({error: true, data: {message: 'error'}});
+                callback({error: true, data: {message: 'Unable to get User.'}});
             });
     },
     getByEmailVerificationToken: function (emailVerificationToken, callback) {
@@ -158,7 +158,7 @@ var Repository={
             callback({error: false, data: User});
         })
         .catch(function (err) {
-            callback({error: true, data: {message: 'error'}});
+            callback({error: true, data: {message: 'Unable to get User with the verificatioon token.'}});
         });
     },
     getByRecoveryToken: function (recoverHash, callback) {

@@ -1,16 +1,10 @@
 
 var Models=require('./Models.js');
+var ProcedureResponse=require('./ProcedureResponse');
 
 var Repository={
     Register:function(Profile,callback){
-
-
-
-        var rawSql = 'call CreateUser(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,@out_value)';
-
-        var outPut='';
-
-
+        var rawSql = 'call CreateUser(?,?,?,?,?,?,?,?,?,?,?,?,?,@Result);select @Result;';
         Models.bookshelf.knex.raw(rawSql,[
             Profile._Id.toHexString() || '',
             Profile.User.Email || null,
@@ -18,26 +12,27 @@ var Repository={
 
             Profile.User.RegistrationIp || '',
             Profile.User.EmailVerification || '',
-            Profile.User.MobileOtp || '',
+            Profile.User.MobileVerification || '',
             Profile.User.Password || '',
             Profile.User.Salt || '',
-
-            Profile.User.GooglePlus || '',
-            Profile.User.Facebook || '',
 
             Profile.FirstName || '',
             Profile.LastName || '',
             Profile.ProfileName || '',
             Profile.ProfilePic || '',
-            Profile.AccountType || null,
-            Profile.UserStatus || null
+            Profile.AccountType || null
         ])
         .then(function (ProfileDbModel) {
-            callback({error: false, data:Profile._Id.toHexString()});
+            var result=ProcedureResponse.returnData(ProfileDbModel);
+
+            if(result==1)
+                callback({error: false, data:Profile._Id.toHexString()});
+            else
+                callback({error: true, data:{message: 'Unable to create user.'}});
         })
         .catch(function (err) {
             console.log(err);
-            callback({error: true, data: {message: 'failed.'}});
+            callback({error: true, data: {message: 'Internal server error.'}});
         }); 
         
     },
@@ -67,11 +62,7 @@ var Repository={
             .forge({_id: Profile._id})
             .fetch()
             .then(function(model) {
-
-                console.log(model);
-
                 model.set({
-                    Email:Profile.Email || model.get('Email'),
                     FirstName: Profile.FirstName || model.get('FirstName'),
                     LastName: Profile.LastName || model.get('LastName'),
                     ProfileName: Profile.ProfileName || model.get('ProfileName'),

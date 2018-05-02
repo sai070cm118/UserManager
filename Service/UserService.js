@@ -29,39 +29,39 @@ var Service={
     getByEmail:function(email,callback){
         _repository.UserRepository.getByEmail(email,callback);
     },
-    getByEmailOrMobile:function(emailOrMobile,callback){
-        _repository.UserRepository.getByEmailOrMobile(emailOrMobile,callback);
+    getByEmailOrMobile:function(email,mobile,callback){
+        _repository.UserRepository.getByEmailOrMobile(email,mobile,callback);
     },
     authenticateUser:function(UserIdentity,callback){
         _repository.UserRepository.getByName(UserIdentity,callback);
     },
-    getByEmailVerificationToken: function (verificationToken, callback) {
+    verifyEmail: function (userId,verificationToken, callback) {
         _repository.UserRepository.getByEmailVerificationToken(verificationToken,function(userData){
             if(userData.error)
-                callback(result);
+                callback({error:false,data:'Unable to verify Email.'});
             else{
-                var profile={_id:userData.data.get('_id'),Status:3};
-                _profileService.getById(profile._id,function(profileData){
-                    if(profileData.error)
-                        callback(profileData);
-                    else{
-                        if(profileData.data.Status==2){
-                            _profileService.update(profile,function(updatedProfile){
-                                if(updatedProfile.error){
-                                    callback(updatedProfile);
-                                }
-                                else{
-                                    callback(updatedProfile);
-                                }
-                            });
+                var profile={_id:userData.data.get('_id'),Status:2,EmailVerification:66666666};
+                if(profile._id==userId){
+                    _repository.UserRepository.update(profile,function(){
+
+                    });
+                    _profileService.update(profile,function(updatedProfile){
+                        if(updatedProfile.error){
+                            callback({error:false,data:'Unable to verify Email.'});
                         }
-                    }
-                });
+                        else{
+                            callback({error:true,data:'Email verification sucess.'});
+                        }
+                    });
+                }
+                else{
+                    callback({error:false,data:'Unable to verify Email.'});
+                }
             }
         });
     },
     login:function(user,callback){
-        this.getByEmailOrMobile(user.Email,function(result){
+        this.getByEmailOrMobile(user.Email,user.Email,function(result){
 
             console.log(result);
 
@@ -69,11 +69,26 @@ var Service={
                 callback(result);
             else{
                 var hashedPassword=SecurityManager.sha512(user.Password,result.data.get('Salt'));
+                
                 if(result.data.get('PasswordHash')==hashedPassword.passwordHash){
 
-
                     _profileService.getById(result.data.get('_id'),function(result){
-                        callback(result);
+
+                        if(result.data.Status==1)
+                            callback({error:true,data:{message:'Email not verified.',code:2}});
+                        else if(result.data.Status==2)
+                            callback({error:true,data:{message:'Mobile not verified.',code:3}});
+                        else if(result.data.Status==3){
+                            if(result.data.IsActive){
+                                callback(result);
+                            }
+                            else{
+                                callback({error:true,data:{message:'Your account is in active.',code:3}});
+                            }
+                        }
+                        else{
+                            callback({error:true,data:{message:'Unable to login right now. Please try later.',code:4}});
+                        }
                     });
                 }
                 else{
@@ -120,8 +135,7 @@ var Service={
         user.PasswordHash=hashedPassword.passwordHash;
         user.Salt=hashedPassword.salt;
 
-        console.log(user);
-        _repository.UserRepository.getById(user._id,function(result){
+        _repository.UserRepository.getByEmailOrMobile(user.Email,user.Email,function(result){
 
             if(result.error)
                 callback(result);
@@ -129,56 +143,54 @@ var Service={
                 var oldHashedPassword=SecurityManager.sha512(user.OldPassword,result.data.Salt);
 
                 if(result.data.PasswordHash==oldHashedPassword.passwordHash){
-                    _repository.UserRepository.update(user,function(result){
-                        if(result.error)
-                            callback(result);
-                        else{
-                            _profileService.update({_id:user._id},function(result){
-                                callback(result);
-                            });
-                        }
-                    });
+                    _repository.UserRepository.update(user,callback);
                 }
                 else{
-                    callback({error:true,data:'Unable to Reset password.'});
+                    callback({error:true,data:{message: 'Invalid Credentials.'}});
                 }
             }
         });
     },
     forgotPassword:function(EmailOrMobile,callback){
-        _this=this;
-        _repository.UserRepository.getByEmailOrMobile(EmailOrMobile,function(result){
+        _repository.UserRepository.getByEmailOrMobile(EmailOrMobile,EmailOrMobile,function(result){
 
             if(result.error)
-                callback(result);
+                callback({error:true,data:'User not available with given details.'});
             else{
-                var user={_id:result.data.get('_id'),RecoverTimeStamp:new Date(new Date(new Date().setMinutes(new Date().getMinutes()+5)).toUTCString()),Email:result.data.get('Email').toLowerCase()}
+                var user={
+                    _id:result.data.get('_id'),
+                    TimeStamp:new Date(new Date(new Date().setMinutes(new Date().getMinutes()+5)).toUTCString()),
+                    Email:result.data.get('Email').toLowerCase()
+                }
                 
-                console.log(result.data.get('Email').toLowerCase());
-                console.log(EmailOrMobile.toLowerCase());
-
-                
-
                 if(result.data.get('Email').toLowerCase()==EmailOrMobile.toLowerCase()){
                     user.RecoverType=false;
-                    user.RecoverHash=SecurityManager.generateRandomString(64);
+                    user.RecoverHash=SecurityManager.generateRandomString(8,/\d/);
                 }
                 else{
                     user.RecoverType=true;
-                    user.RecoverHash=SecurityManager.generateRandomString(8,/\d/);
+                    user.RecoverHash=SecurityManager.generateRandomString(6,/\d/);
                 }
 
                 _repository.UserRepository.update(user,function(result){
                     if(result.error){
-                        callback(result);
+                        callback({error:true,data:'Unable to send the recover your account.'});
                     }
                     else{
                         result.data={"RecoverType":user.RecoverType};
 
                         if(!user.RecoverType){
-                            //var mailOptions=new CoreModels.MailOptions(ConfigurationManager.getEmailConfiguration().auth.user,user.Email,'Account recovery','Your recovery link is: ',_this.ForgotEmailTemplate(ConfigurationManager.getWebURI()+'RecoverAccount/'+user.RecoverHash+'/'+user.Email));
-                        
+                            var mailOptions = {
+                                from: 'raviteja.vinnakota6@gmail.com',
+                                to: user.Email,
+                                subject: 'Recover Email',
+                                text: user.RecoverHash
+                            };
+    
                             NotificationManager.sendEmail(mailOptions);
+                        }
+                        else{
+                            //TODO: Send OTP to mobile.
                         }
 
                         callback(result)
@@ -188,64 +200,51 @@ var Service={
         });
     },
     verifyMobile:function(user,callback){
+        _repository.UserRepository.getById(user._id,function(profile){
+            if(profile.error)
+                callback(profile);
+            else{
+                if(profile.data.MobileVerification==user.MobileVerification){
+                    profile={_id:user._id,Status:3,MobileVerification:666666};
+                    _repository.UserRepository.update(profile,function(){
 
-
-        var _this=this;
-        _this.getById(user._id,function(result1){
-            if(result1.error)
-                    callback(result1);
-                else{
-                    _profileService.getById(user._id,function(result2){
-                        if(result2.error)
-                            callback(result2);
-                        else{
-
-                            if(result2.data.Status==3){
-                                if(result1.data.MobileVerificationOTP==user.MobileVerificationOTP  && result1.data.TempMobile==user.Mobile){
-                                    _this.update(user,function(result3){
-                                        _profileService.update({_id:user._id,Status:4,IsActive:1},function(result4){
-                                            callback(result1);
-                                        });
-                                    });
-                                }
-                                else{
-                                    callback({error:true,data:'Invalid details.'});
-                                }
-                            }
-                            else{
-                                callback({error:true,data:'Mobile already Verified.'});
-                            }
-                        }
+                    });
+                    _profileService.update(profile,function(result4){
+                        callback({error:true,data:'Your mobile verification sucess.'});
                     });
                 }
-           });
+                else{
+                    callback({error:true,data:'Unable to verify the mobile.'});
+                }
+            }
+        });
     },
     RecoverPassword:function(user,callback){
-        _repository.UserRepository.getByEmailOrMobile(user.Email,function(result){
+        _repository.UserRepository.getByEmailOrMobile(user.Email,user.Email,function(result){
             if(result.error)
                 callback(result);
             else{
 
-
-                console.log(user.RecoverType);
-                console.log(result.data.get('RecoverTimeStamp'));
-                console.log(new Date(new Date().toUTCString()));
-
-                if(result.data.get('RecoverTimeStamp')>new Date(new Date().toUTCString())){
-                    var hashedPassword=SecurityManager.saltHashPassword(user.Password);
-                    user.PasswordHash=hashedPassword.passwordHash;
-                    user.Salt=hashedPassword.salt;
-                    user.RecoverHash=' ';
-                    user.RecoverTimeStamp=null;
-                    user._id=result.data.get('_id');
-
-                    console.log(user);
-                    _repository.UserRepository.update(user,function(result){
-                        callback(result);
-                    });
+                if(result.data.get('RecoverHash')!=user.RecoverHash){
+                    callback({error:true,data:'Invalid Recover Token/OTP.'});
                 }
                 else{
-                    callback({error:true,data:'Unable to recover.'});
+                    if(result.data.get('TimeStamp')>new Date(new Date().toUTCString())){
+                        var hashedPassword=SecurityManager.saltHashPassword(user.Password);
+                        user.PasswordHash=hashedPassword.passwordHash;
+                        user.Salt=hashedPassword.salt;
+                        user.RecoverHash='66666666';
+                        user.TimeStamp=null;
+                        user.RecoverType=null;
+                        user._id=result.data.get('_id');
+
+                        _repository.UserRepository.update(user,function(result){
+                            callback({error:true,data:'Recovery password suces.'});
+                        });
+                    }
+                    else{
+                        callback({error:true,data:'Recover Token/OTP expired.'});
+                    }
                 }
             }
         });

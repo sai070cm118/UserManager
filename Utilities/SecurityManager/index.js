@@ -18,12 +18,12 @@ function verifyToken(token,verificationCallback){
 function extractUserFromToken(req, res, next) {  
 
 
-    if(req.headers['authorization']==null || req.headers['authorization']==undefined){
+    if(req.headers['sessiontoken']==null || req.headers['sessiontoken']==undefined){
         console.log('No autherizaion headr present');
         next();
     }
     else{
-        nJwt.verify(req.headers['authorization'],ConfigurationManager.getTokenSecret(),function(err,verifiedJwt){
+        nJwt.verify(req.headers['sessiontoken'],ConfigurationManager.getTokenSecret(),function(err,verifiedJwt){
             
             if(err)
                 next();

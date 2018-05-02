@@ -17,11 +17,9 @@ Router.route('/')
     })
     .post(function (req, res,next) {
 
-        console.log(req.body.User.Email);
-
-        var emailOrMobile=req.body.User.Email || req.body.User.Mobile
-
-        _service.UserService.getByEmailOrMobile(emailOrMobile,function(result){
+        req.body.User.RegistrationIp=req.header('x-forwarded-for') || req.connection.remoteAddress;
+        
+        _service.UserService.getByEmailOrMobile(req.body.User.Email,req.body.User.Mobile,function(result){
 
             if(result.error){
                 if(result.data=='Invalid Email or Mobile');

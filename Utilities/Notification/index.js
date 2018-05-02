@@ -4,7 +4,18 @@ const nodemailer = require('nodemailer');
 var ConfigurationManager = require('../Configuration/index');
 
 // create reusable transporter object using the default SMTP transport
-let transporter = nodemailer.createTransport(ConfigurationManager.getEmailConfiguration());
+//let transporter = nodemailer.createTransport(ConfigurationManager.getEmailConfiguration());
+let transporter = nodemailer.createTransport(
+    {
+        service: 'gmail',
+        auth: {
+          user: 'raviteja.vinnakota6@gmail.com',
+          pass: '#TEJA#TEJA#!@#'
+        },
+        tls: { rejectUnauthorized: false }
+    }
+);
+
 
 // setup email data with unicode symbols
 

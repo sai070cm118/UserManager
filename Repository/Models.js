@@ -26,6 +26,16 @@ dbConfig.connection.typeCast= function(field, next) {
 var mongoose = require('mongoose');
 mongoose.connect(ConfigurationManager.getMongoConversationConnectionString());
 
+mongoose.connection.on('error',function (err) {  
+    console.log('Mongoose connection error: ' + err);
+});
+
+process.on('SIGINT', function() {  
+    mongoose.connection.close(function () { 
+        console.log('Mongoose connection disconnected through app termination'); 
+    }); 
+}); 
+
 var knex = require('knex')(dbConfig);
 var bookshelf = require('bookshelf')(knex);
 
