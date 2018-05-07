@@ -20,5 +20,5 @@ app.use(function(err, req, res, next){
   	res.send(500, 'Something broke!');
 });
 app.listen(process.env.PORT || 4004,function(){
-	console.log("Express started at port 4003");
+	console.log("Express started at port 4004");
 });

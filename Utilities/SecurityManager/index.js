@@ -17,6 +17,7 @@ function verifyToken(token,verificationCallback){
 //Middleware user on every request after login for Extract the user details form the token which is passend in autherization header.
 function extractUserFromToken(req, res, next) {  
 
+    console.log(req.headers['sessiontoken']);
 
     if(req.headers['sessiontoken']==null || req.headers['sessiontoken']==undefined){
         console.log('No autherizaion headr present');
@@ -25,6 +26,10 @@ function extractUserFromToken(req, res, next) {
     else{
         nJwt.verify(req.headers['sessiontoken'],ConfigurationManager.getTokenSecret(),function(err,verifiedJwt){
             
+
+            console.log(verifiedJwt);
+            console.log(err);
+
             if(err)
                 next();
             else if(verifiedJwt==undefined)

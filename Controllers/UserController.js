@@ -102,8 +102,12 @@ Router.route('/GetByEmailOrMobile/:EmailOrMobile')
 Router.route('/resend/VerificationEmail')
   .get(SecurityManager.extractUserFromToken,function (req, res) {
 
-        _service.ProfileService.getById(req.body.UserId,function(result){
-            if(result.error)
+        console.log(req.body.UserId);
+
+        _service.ProfileService.getById(req.body.UserId,function(userResult){
+
+
+            if(userResult.error)
                 res.json(result);
             else{
 
@@ -113,7 +117,7 @@ Router.route('/resend/VerificationEmail')
                     if(!result.error){
                         var mailOptions = {
                             from: 'raviteja.vinnakota6@gmail.com',
-                            to: result.data.Email,
+                            to: userResult.data.Email,
                             subject: 'Verification Email',
                             text: resendData.EmailVerification
                         };
@@ -199,26 +203,37 @@ Router.route('/verifyMobile/:Token')
 Router.route('/Login')
 .post(function (req, res) {
     _service.UserService.login(req.body.User,function(result){
+        
+        console.log(result);
+
         if(result.error)
             res.send(result);
         else{
 
-            var claims={Id:result.data._id}
-            var token={
-                UserId:result.data._id,
-                RefreshToken: SecurityManager.createToken(claims,true),
-                SessionToken: SecurityManager.createToken(claims,false),
-                UserAgent: '',
-                DeviceId: '',
-                IsMobile:  '',
-                Details: '',
+            if(result.data.data._id==undefined){
 
-            };
+                callback({error:true,data:'Unable to login. Please try later.'});
+            }
+            else{
+                var claims={Id:result.data.data._id}
+                var token={
+                    UserId:result.data.data._id,
+                    RefreshToken: SecurityManager.createToken(claims,true),
+                    SessionToken: SecurityManager.createToken(claims,false),
+                    UserAgent: '',
+                    DeviceId: '',
+                    IsMobile:  '',
+                    Details: '',
 
-            _service.TokenService.create(token,function(tokenResult){
-                result.data.Token=token;
-                res.send(result);
-            });
+                };
+                console.log(token);
+
+                _service.TokenService.create(token,function(tokenResult){
+                    result.data.Token=token;
+                    res.send(result);
+                });
+                    
+            }
 
         }
     });

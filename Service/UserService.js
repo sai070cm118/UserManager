@@ -38,7 +38,7 @@ var Service={
     verifyEmail: function (userId,verificationToken, callback) {
         _repository.UserRepository.getByEmailVerificationToken(verificationToken,function(userData){
             if(userData.error)
-                callback({error:false,data:'Unable to verify Email.'});
+                callback({error:true,data:'Unable to verify Email.'});
             else{
                 var profile={_id:userData.data.get('_id'),Status:2,EmailVerification:66666666};
                 if(profile._id==userId){
@@ -47,15 +47,15 @@ var Service={
                     });
                     _profileService.update(profile,function(updatedProfile){
                         if(updatedProfile.error){
-                            callback({error:false,data:'Unable to verify Email.'});
+                            callback({error:true,data:'Unable to verify Email.'});
                         }
                         else{
-                            callback({error:true,data:'Email verification sucess.'});
+                            callback({error:false,data:'Email verification sucess.'});
                         }
                     });
                 }
                 else{
-                    callback({error:false,data:'Unable to verify Email.'});
+                    callback({error:true,data:'Unable to verify Email.'});
                 }
             }
         });
@@ -80,7 +80,7 @@ var Service={
                             callback({error:false,data:{message:'Mobile not verified.',code:3,data:result.data}});
                         else if(result.data.Status==3){
                             if(result.data.IsActive){
-                                callback(result);
+                                callback({error:false,data:{message:'Login Sucess.',code:4,data:result.data}});
                             }
                             else{
                                 callback({error:true,data:{message:'Your account is in active.',code:3}});
@@ -205,12 +205,12 @@ var Service={
                 callback(profile);
             else{
                 if(profile.data.MobileVerification==user.MobileVerification){
-                    profile={_id:user._id,Status:3,MobileVerification:666666};
+                    profile={_id:user._id,Status:3,IsActive:true,MobileVerification:666666};
                     _repository.UserRepository.update(profile,function(){
 
                     });
                     _profileService.update(profile,function(result4){
-                        callback({error:true,data:'Your mobile verification sucess.'});
+                        callback({error:false,data:'Your mobile verification sucess.'});
                     });
                 }
                 else{
