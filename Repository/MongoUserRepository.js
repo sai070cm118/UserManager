@@ -4,6 +4,7 @@ var Repository={
     add:function(User,callback){
         Models.UserModel.create(User, function (err, UserResult) {
               if (err) {
+                  console.log(err);
                 callback({error: true, data: {}});
               } 
               else {

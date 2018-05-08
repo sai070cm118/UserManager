@@ -45,26 +45,31 @@ var Service={
                 Profile.Mobile=Profile.User.Mobile;
 
                 _mongoUserService.add(Profile,function(result){
+
                     Profile._Id=result.data._id;
-                    console.log(Profile);
-                    _repository.ProfileRepository.Register(Profile,function(result){
 
-                        if(!result.error){
-                            var mailOptions = {
-                                from: 'raviteja.vinnakota6@gmail.com',
-                                to: Profile.User.Email,
-                                subject: 'Verification Email',
-                                text: Profile.User.EmailVerification
-                            };
-    
-                            NotificationManager.sendEmail(mailOptions);
-
-                            //TODO: Need to send the otp to mobile.
-                        }
-
+                    if(result.error){
                         callback(result);
-                    });
+                    }
+                    else{
+                        _repository.ProfileRepository.Register(Profile,function(result){
 
+                            if(!result.error){
+                                var mailOptions = {
+                                    from: 'raviteja.vinnakota6@gmail.com',
+                                    to: Profile.User.Email,
+                                    subject: 'Verification Email',
+                                    text: Profile.User.EmailVerification
+                                };
+        
+                                NotificationManager.sendEmail(mailOptions);
+
+                                //TODO: Need to send the otp to mobile.
+                            }
+
+                            callback(result);
+                        });
+                    }
 
                 });
             }

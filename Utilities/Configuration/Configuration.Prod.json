@@ -1,18 +1,14 @@
 {
-    "WebURI":"http://127.0.0.1:3001/",
-    "ApiURI":"http://127.0.0.1:3002/",
-    "NotificationURI":"http://127.0.0.1:3003/",
-    "SocketURI":"http://127.0.0.1:3004/",
-    "MongoConversationDbConnection":"mongodb://127.0.0.1:27017/Conversation",
-    "MongoNotificationDbConnection":"mongodb://127.0.0.1:27017/Notification",
+    "MongoConversationDbConnection":"mongodb://usermanager:sairam0168@ds237669.mlab.com:37669/usermanager",
     "MySqlDbConnection":"http://127.0.0.1:3001/",
-    "MySqlDbConfiguration":{"host": "127.0.0.1","user": "root","password": "sairam0168","database": "gdatabase","charset": "utf8"},
+    "MySqlDbConfiguration":{"host": "182.50.133.89","port":"3306","user": "usermanagement","password": "sairam0168","database": "usermanagement","charset": "utf8",
+        "multipleStatements": true},
     "TokenSecret":"sairam0168",
     "RefreshTokenSecret":"sairam0168",
     "Algorithm":"HS256",
     "RefreshAlgorithm":"HS256",
-    "TokenExpireTime":86400000,//One day limit
-    "RefreshTokenExpireTime":86400000,//One day limit
+    "TokenExpireTime":31536000000,
+    "RefreshTokenExpireTime":31536000000,
     "Authentication":{
         "Facebook": {
             "clientID": "225172824580440",
@@ -43,6 +39,25 @@
             "clientSecret": "get_your_own",
             "callbackDomain": "http://127.0.0.1:3000/",
             "callbackURI":"auth/instagram/callback"
+        }
+    },
+    "UserStates":
+    {
+        "LoginSucess":1,
+        "LoginFailed":2,
+        "Registration":3,
+        "ChoosePassword":4,
+        "EmailVerificationPending":5,
+        "MobileVerificationPending":6,
+        "UnKnown":7
+    },
+    "MailSettings":{
+        "host": "connate.cc",
+        "port": 25,
+        "secure": false,
+        "auth": {
+            "user": "no_reply@connate.cc",
+            "pass": "Vision2014^"
         }
     }
 }
