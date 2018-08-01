@@ -1,5 +1,5 @@
-const CommonConfig=require('./Configuration.Prod.json');
-//const CommonConfig=require('./Configuration.local.json');
+//const CommonConfig=require('./Configuration.Prod.json');
+const CommonConfig=require('./Configuration.local.json');
 
 function getMongoConversationConnectionString () {
     return CommonConfig.MongoConversationDbConnection;

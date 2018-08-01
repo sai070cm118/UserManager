@@ -12,3 +12,13 @@ Actions
 
 1) Upto Name and profile pic update
 
+
+1) Mongo DB
+
+    cd/
+    cd program files
+    cd mongodb
+    cd server
+    cd 3.4
+    cd bin
+    mongod -dbpath="c:/intel/mongodata"
